@@ -2,6 +2,7 @@ import { useState } from "react";
 import Todo from "./Todo";
 import TodoForm from "./TodoForm";
 import type { Todo as TodoType } from "./Todos.types";
+import swal from "sweetalert";
 
 function TodosWrapper() {
   const [todos, setTodos] = useState<TodoType[]>([]);
@@ -19,9 +20,35 @@ function TodosWrapper() {
     return true;
   };
 
-  const removeTodo = (id: string) => {};
+  const removeTodo = (id: string) => {
+    swal({
+      title: "Are you sure?",
+      icon: "warning",
+      buttons: ["No", "Yes"],
+    }).then((result) => {
+      if (result) {
+        setTodos(todos.filter((todo) => todo.id !== id));
+        swal({
+          title: "todo deleted :)",
+          icon: "success",
+          buttons: ["OK"],
+          timer: 2000,
+        });
+      }
+    });
 
-  const toggleComplete = (id: string) => {};
+    return true;
+  };
+
+  const toggleComplete = (id: string) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+
+    return true;
+  };
   return (
     <div className="TodoWrapper">
       <h1>Todo List ❤️ </h1>
@@ -30,7 +57,12 @@ function TodosWrapper() {
       {/* display todos */}
 
       {todos.map((todo) => (
-        <Todo todo={todo} removeTodo={removeTodo} completedTodo={toggleComplete} />
+        <Todo
+          key={todo.id}
+          todo={todo}
+          removeTodo={removeTodo}
+          toggleComplete={toggleComplete}
+        />
       ))}
     </div>
   );
